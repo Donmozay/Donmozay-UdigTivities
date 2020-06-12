@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Persistence;
@@ -9,7 +10,7 @@ using Persistence;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private readonly DataContext _context;
@@ -18,10 +19,6 @@ namespace API.Controllers
         {
             _context = context;
         }
-        private static readonly string[] Summaries = new[]
-        {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
 
         private readonly ILogger<WeatherForecastController> _logger;
 
@@ -30,20 +27,22 @@ namespace API.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
-        public ActionResult <IEnumerable<WeatherForecasts>> Get()
+        [HttpGet("weatherforcast")]
+        public ActionResult <IEnumerable<WeatherForcast>> Get()
         {
             var WeatherForecast = _context.WeatherForcasts.ToList();
 
             return Ok(WeatherForecast);
-            // rng = new Random();
-            //return Enumerable.Range(1, 5).Select(index => new WeatherForecasts
-            //{
-            //    Date = DateTime.Now.AddDays(index),
-            //    TemperatureC = rng.Next(-20, 55),
-            //    Summary = Summaries[rng.Next(Summaries.Length)]
-            //})
-            //.ToArray();
+           
+        }
+
+          [HttpGet  ("{Id}")] 
+        public async Task <ActionResult <WeatherForcast>> Get(int Id)
+        {
+            var WeatherForecast = await _context.WeatherForcasts.FindAsync(Id);
+
+            return Ok(WeatherForecast);
+           
         }
     }
 }
